@@ -38,6 +38,12 @@ export class CoffeesService {
   }
 
   update(coffeeId: string, coffeeDto: PatchCoffeeDto) {
+    const coffee = this.coffees.find((coffee) => coffee.id === coffeeId);
+
+    if (!coffee) {
+      throw new NotFoundException(`Coffee with id ${coffeeId} not found`);
+    }
+
     this.coffees = this.coffees.map((coffee) => {
       if (coffee.id === coffeeId) {
         return {
