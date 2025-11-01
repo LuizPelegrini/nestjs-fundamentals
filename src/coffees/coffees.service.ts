@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Coffee } from './entities/coffee.entity';
+import { CreateCoffeeDto } from './dto/create-coffee-dto';
+import { PatchCoffeeDto } from './dto/patch-coffee.dto';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class CoffeesService {
   private coffees: Coffee[] = [
     {
-      id: 1,
+      id: randomUUID(),
       name: 'Shipwreck Roast',
       brand: 'Buddy Brew',
       flavors: ['chocolate', 'vanilla'],
@@ -17,7 +20,7 @@ export class CoffeesService {
   }
 
   findOne(id: string) {
-    const coffee = this.coffees.find((coffee) => coffee.id === +id);
+    const coffee = this.coffees.find((coffee) => coffee.id === id);
     if (!coffee) {
       throw new NotFoundException(`Coffee with id ${id} not found`);
     }
@@ -25,17 +28,21 @@ export class CoffeesService {
     return coffee;
   }
 
-  create(coffee: Coffee) {
-    this.coffees.push(coffee);
+  create({ name, brand, flavors }: CreateCoffeeDto) {
+    this.coffees.push({
+      id: randomUUID(),
+      name,
+      brand,
+      flavors,
+    });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(coffeeId: string, { id, ...body }: Coffee) {
+  update(coffeeId: string, coffeeDto: PatchCoffeeDto) {
     this.coffees = this.coffees.map((coffee) => {
-      if (coffee.id === +coffeeId) {
+      if (coffee.id === coffeeId) {
         return {
-          id: coffee.id,
-          ...body,
+          ...coffee,
+          ...coffeeDto,
         };
       }
 
@@ -44,6 +51,6 @@ export class CoffeesService {
   }
 
   remove(id: string) {
-    this.coffees = this.coffees.filter((coffee) => coffee.id !== +id);
+    this.coffees = this.coffees.filter((coffee) => coffee.id !== id);
   }
 }

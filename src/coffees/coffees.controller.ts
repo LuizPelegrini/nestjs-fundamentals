@@ -4,11 +4,13 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import { CoffeesService } from './coffees.service';
+import { CreateCoffeeDto } from './dto/create-coffee-dto';
+import { PatchCoffeeDto } from './dto/patch-coffee.dto';
 
 @Controller('coffees')
 export class CoffeesController {
@@ -25,12 +27,12 @@ export class CoffeesController {
   }
 
   @Post()
-  create(@Body() body) {
+  create(@Body() body: CreateCoffeeDto) {
     this.coffeesService.create(body);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() body) {
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() body: PatchCoffeeDto) {
     return this.coffeesService.update(id, body);
   }
 
