@@ -9,6 +9,9 @@ async function bootstrap() {
       whitelist: true, // strips out any props in request body that don't exist in DTO
       forbidNonWhitelisted: true, // throw errors when props that don't exist in DTO are included in the request
       transform: true, // transform incoming request data (HTTP protocol treats everything as string) to correct DTO types
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   await app.listen(process.env.PORT ?? 3000);
