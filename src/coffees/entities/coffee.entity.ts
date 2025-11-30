@@ -25,4 +25,7 @@ export class Coffee {
     { cascade: true }, // ensures that when a coffee is created, the flavours are also created
   )
   flavours: Flavour[];
+
+  @Column({ default: 0 })
+  recommendations: number;
 }
