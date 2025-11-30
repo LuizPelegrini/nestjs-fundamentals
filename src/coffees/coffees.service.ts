@@ -4,12 +4,15 @@ import { CreateCoffeeDto } from './dto/create-coffee-dto';
 import { PatchCoffeeDto } from './dto/patch-coffee.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Flavour } from './entities/flavour.entity';
 
 @Injectable()
 export class CoffeesService {
   constructor(
     @InjectRepository(Coffee)
     private readonly coffeesRepository: Repository<Coffee>,
+    @InjectRepository(Flavour)
+    private readonly flavoursRepository: Repository<Flavour>,
   ) {}
 
   findAll() {
@@ -32,16 +35,30 @@ export class CoffeesService {
     return coffee;
   }
 
-  create(coffeeDto: CreateCoffeeDto) {
-    const newCoffee = this.coffeesRepository.create(coffeeDto);
+  async create(coffeeDto: CreateCoffeeDto) {
+    const flavours = await Promise.all(
+      coffeeDto.flavours.map((name) => this.preloadFlavour(name)),
+    );
+    const newCoffee = this.coffeesRepository.create({
+      ...coffeeDto,
+      flavours,
+    });
     return this.coffeesRepository.save(newCoffee);
   }
 
   async update(coffeeId: number, coffeeDto: PatchCoffeeDto) {
+    // only update flavours if property is provided in request
+    const flavours =
+      coffeeDto.flavours &&
+      (await Promise.all(
+        coffeeDto.flavours.map((name) => this.preloadFlavour(name)),
+      ));
+
     // preloads existing entry and replaces its values with the ones coming from request
     const coffee = await this.coffeesRepository.preload({
       id: coffeeId,
       ...coffeeDto,
+      flavours,
     });
 
     if (!coffee) {
@@ -54,5 +71,19 @@ export class CoffeesService {
   async remove(id: number) {
     const coffee = await this.findOne(id);
     return this.coffeesRepository.remove(coffee);
+  }
+
+  async preloadFlavour(name: string) {
+    const flavour = await this.flavoursRepository.findOne({
+      where: { name },
+    });
+
+    if (!flavour) {
+      return this.flavoursRepository.create({
+        name,
+      });
+    }
+
+    return flavour;
   }
 }

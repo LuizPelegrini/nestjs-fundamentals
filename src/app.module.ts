@@ -14,7 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'postgres',
       password: 'admin123',
       database: 'postgres',
-      // creates DB tables from Entity classes automatically. It doesn't require migrations to run
+      // loads entities files automatically, without the need to add every single entity in the entities array
       autoLoadEntities: true,
       // Setting synchronize: true -> Indicates if database schema should be auto created on every application launch
       // it shouldn't be used in production - otherwise you can lose production data.
