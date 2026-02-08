@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { CoffeesModule } from './coffees/coffees.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './events/events.module';
+import { CoffeeRatingsModule } from './coffee-ratings/coffee-ratings.module';
 
 @Module({
   imports: [
     CoffeesModule,
     EventsModule,
+    CoffeeRatingsModule, // TODO: Not being used so far
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -24,7 +24,7 @@ import { EventsModule } from './events/events.module';
       synchronize: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
